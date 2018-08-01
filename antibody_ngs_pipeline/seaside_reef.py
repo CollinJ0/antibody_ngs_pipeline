@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+# filename: seaside_reef.py
+
 
 import os
 import sys

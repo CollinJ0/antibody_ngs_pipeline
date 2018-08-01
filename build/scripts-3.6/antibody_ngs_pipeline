@@ -7,7 +7,8 @@ from antibody_ngs_pipeline import horseshoe as scripps
 
 if __name__ == '__main__':
     #Preprocessing the data if specified
-    scripps.preprocess(config.ABSTAR_ARGS)
+    if config.ARGS.fastqc or config.ARGS.adapter_fasta != None:
+        scripps.preprocess(config.ABSTAR_ARGS, config.ARGS)
 
     #Run Abstar On Basespace Project
     scripps.run_abstar(config.ABSTAR_ARGS, config.PROJECT)
