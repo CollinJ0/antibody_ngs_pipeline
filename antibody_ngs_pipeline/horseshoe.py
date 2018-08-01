@@ -47,8 +47,7 @@ def abstar_params(project):
         parameters = change_abstar_params(parameters)
     return parameters
 
-def preprocess(args):
-    pipeline_args = parse_arguments()
+def preprocess(args, pipeline_args):
     if pipeline_args.fastqc and pipeline_args.adapter_fasta == None:
         print('FASTQC only specified, Running FASTQC on raw data...')
         #To Do: run_fastqc(args)

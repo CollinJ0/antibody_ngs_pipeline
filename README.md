@@ -1,5 +1,7 @@
 # Antibody NGS Pipeline
 
+Bulk antibody sequence preprocessing, annotaion with abstar, upload to MongoDB and S3
+
 ### install  
 `pip install antibody-ngs-pipeline`
 
