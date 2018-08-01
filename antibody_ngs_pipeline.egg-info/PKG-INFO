@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: antibody-ngs-pipeline
-Version: 0.2
+Version: 0.3
 Summary: Bulk antibody sequence preprocessing, annotaion with abstar, upload to MongoDB and S3
 Home-page: https://www.github.com/CollinJ0/antibody_ngs_pipeline
 Author: CollinJ0
