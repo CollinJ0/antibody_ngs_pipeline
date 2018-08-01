@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+# filename: antibody_ngs_pipeline
+
+from antibody_ngs_pipeline import config
+from antibody_ngs_pipeline import horseshoe as scripps
+
+
+if __name__ == '__main__':
+    #Preprocessing the data if specified
+    scripps.preprocess(config.ABSTAR_ARGS)
+
+    #Run Abstar On Basespace Project
+    scripps.run_abstar(config.ABSTAR_ARGS, config.PROJECT)
+
+    #Import the data to a MongoDB
+    scripps.run_mongo_import(config.MONGO_ARGS)
+    
+    #To Do: Import the data to S3
+    #scripps.run_s3_import(config.S3_ARGS)
