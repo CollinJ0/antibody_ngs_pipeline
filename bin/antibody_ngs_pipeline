@@ -15,6 +15,8 @@ if __name__ == '__main__':
 
     #Import the data to a MongoDB
     scripps.run_mongo_import(config.MONGO_ARGS)
+
+    #To Do: Correct data by UIDs
     
     #To Do: Import the data to S3
     #scripps.run_s3_import(config.S3_ARGS)
