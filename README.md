@@ -32,6 +32,6 @@ cutadapt
 pymongo  
   
 
-Merging paired sequences requires PANDAseq: https://github.com/neufeld/pandaseq
-batch_mongoimport (from Abstar) requires MongoDB: http://www.mongodb.org/
-Downloading from BaseSpace requires Basemount: https://basemount.basespace.illumina.com/
+Merging paired sequences requires PANDAseq: https://github.com/neufeld/pandaseq  
+batch_mongoimport (from Abstar) requires MongoDB: http://www.mongodb.org/  
+Downloading from BaseSpace requires Basemount: https://basemount.basespace.illumina.com/  
