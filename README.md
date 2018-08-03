@@ -25,11 +25,11 @@ with sickle and get a FASTQC report on both raw data and processed data:
 
 
 ### requirements  
-Python 3.5+
-abstar
-abutils
-cutadapt   
-pymongo
+Python 3.5+  
+abstar  
+abutils  
+cutadapt  
+pymongo  
   
 
 Merging paired sequences requires PANDAseq: https://github.com/neufeld/pandaseq
