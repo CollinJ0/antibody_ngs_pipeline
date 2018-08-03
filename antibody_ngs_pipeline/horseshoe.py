@@ -159,9 +159,9 @@ def validate_abstar_params(params):
 def basemount_dir(bsmnt_dir, project):
     if os.path.exists(bsmnt_dir) and not shutil.which('basemount') == None:
         base = bsmnt_dir.split('/Projects')[0]
-        os.system("basemount --unmount {}".format(base))
+        os.system("basemount --unmount {} > /dev/null".format(base))
         print('Restarting basemount set point')
-        os.system("basemount {}".format(base))
+        os.system("basemount {} > /dev/null".format(base))
         print(os.path.join(bsmnt_dir, project))
         if not os.path.exists(os.path.join(bsmnt_dir, project)):
             pro = input("ERROR: Project not found! Re-enter Project: ")
