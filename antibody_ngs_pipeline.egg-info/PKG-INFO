@@ -1,13 +1,13 @@
 Metadata-Version: 2.1
 Name: antibody-ngs-pipeline
-Version: 0.3
+Version: 1.0.0.dev0
 Summary: Bulk antibody sequence preprocessing, annotaion with abstar, upload to MongoDB and S3
 Home-page: https://www.github.com/CollinJ0/antibody_ngs_pipeline
 Author: CollinJ0
 License: UNKNOWN
 Description: # Antibody NGS Pipeline
         
-        Bulk antibody sequence preprocessing, annotaion with abstar, upload to MongoDB and S3
+        Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3
         
         ### install  
         `pip install antibody-ngs-pipeline`
@@ -26,7 +26,7 @@ Description: # Antibody NGS Pipeline
         
         To run antibody_ngs_pipeline with adapter trimming by CutAdapt  
         and FASTQC report on both raw data and adapter trimmed data:  
-        `antibody_ngs_pipeline -t <path-to-adapters.fasta>`
+        `antibody_ngs_pipeline -f -t <path-to-adapters.fasta>`
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
