@@ -8,13 +8,17 @@ import shutil
 import time
 from getpass import getpass
 from argparse import ArgumentParser
+try:
+    from abstar.core.abstar import Args
+    from abstar.assigners.registry import ASSIGNERS
+    from abstar.utils import mongoimport
+    from abstar import run_standalone
+    from abutils.utils.pipeline import make_dir
+    from abutils.utils.progbar import progress_bar
+except ImportError:
+    print('you need abstar and abutils')
 
-from abstar.core.abstar import Args
-from abstar.assigners.registry import ASSIGNERS
-from abstar.utils import mongoimport
-from abstar import run_standalone
-from abutils.utils.pipeline import make_dir
-from abutils.utils.progbar import progress_bar
+
 
 from .seaside_reef import ABSTAR_PARAMS, copy_from_basemount, print_splash#, MONGO_PARAMS, S3_PARAMS
 
@@ -208,7 +212,7 @@ def mongo_params(project, abstar_args):
           "\nMongo Import Run Arguments\n" \
           "========================================\n")
     abstar_output = os.path.join(abstar_args.project_dir, 'output')
-    mongo_args = mongoimport.Args(db=abstar_args.project_dir, input=abstar_output, delim1='.')
+    mongo_args = mongoimport.Args(db=abstar_args.project_dir.rsplit('/')[1], input=abstar_output, delim1='.')
     if print_mongo_args(mongo_args):
         mongo_args = change_mongo_args(mongo_args)
 
