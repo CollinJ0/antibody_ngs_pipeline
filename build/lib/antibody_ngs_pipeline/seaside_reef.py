@@ -9,10 +9,12 @@ import sys
 from datetime import datetime
 from shutil import copyfile
 import time
-
-from abutils.utils import log
-from abutils.utils.pipeline import make_dir
-from abutils.utils.progbar import progress_bar
+try:
+    from abutils.utils import log
+    from abutils.utils.pipeline import make_dir
+    from abutils.utils.progbar import progress_bar
+except ImportError:
+    print('You need abutils')
 
 
 

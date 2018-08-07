@@ -212,7 +212,7 @@ def mongo_params(project, abstar_args):
           "\nMongo Import Run Arguments\n" \
           "========================================\n")
     abstar_output = os.path.join(abstar_args.project_dir, 'output')
-    mongo_args = mongoimport.Args(db=abstar_args.project_dir.rsplit('/')[1], input=abstar_output, delim1='.')
+    mongo_args = mongoimport.Args(db=project, input=abstar_output, delim1='.')
     if print_mongo_args(mongo_args):
         mongo_args = change_mongo_args(mongo_args)
 

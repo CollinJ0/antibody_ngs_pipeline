@@ -2,7 +2,6 @@ import os
 from .horseshoe import abstar_params, mongo_params, print_the_splash, parse_arguments
 
 
-
 ARGS                = parse_arguments()
 print_the_splash()
 PROJECT             = input('Basespace Project: ')
