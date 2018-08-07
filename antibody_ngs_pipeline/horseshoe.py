@@ -24,7 +24,7 @@ from .seaside_reef import ABSTAR_PARAMS, copy_from_basemount, print_splash#, MON
 
 
 def parse_arguments(print_help=False):
-    parser = ArgumentParser(prog='antibody_ngs_pipeline', description="Bulk antibody sequence preprocessing, annotaion with abstar, upload to MongoDB and S3")
+    parser = ArgumentParser(prog='antibody_ngs_pipeline', description="Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3")
     parser.add_argument('-f', '--fastqc', action='store_true', dest='fastqc', default=False,
                         help="Use to generate a FASTQC quality report on raw data, if used with adapter trimming \
                              '-t' a FASTQC quality report will be made for both pre and post adapter trimmed data.")

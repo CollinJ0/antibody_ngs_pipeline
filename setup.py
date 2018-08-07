@@ -7,7 +7,7 @@ setuptools.setup(
     name='antibody_ngs_pipeline',
     version='1.0.0dev',
     #packages=['antibody_ngs_pipeline',],
-    description='Bulk antibody sequence preprocessing, annotaion with abstar, upload to MongoDB and S3',
+    description='Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3',
     author="CollinJ0",
     url= 'https://www.github.com/CollinJ0/antibody_ngs_pipeline',
     long_description=long_description,
