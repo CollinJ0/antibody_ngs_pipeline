@@ -1,7 +1,7 @@
 # Antibody NGS Pipeline
 
-Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3.
-This is base on the AbStar analysis pipeline: (www.github.com/briney/abstar)
+Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3.  
+This is based on the AbStar analysis pipeline: (www.github.com/briney/abstar)
 
 ### install  
 `pip install antibody-ngs-pipeline`
