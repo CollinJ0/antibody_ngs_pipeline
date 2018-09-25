@@ -54,16 +54,23 @@ def abstar_params(project):
 
 def preprocess(args, pipeline_args):
     if pipeline_args.fastqc and pipeline_args.adapter_fasta == None:
-        print('FASTQC only specified, Running FASTQC on raw data...')
+        print("\n========================================" \
+              "\nFASTQC only specified, Running FASTQC on raw data...\n" \
+              "========================================\n")
         #To Do: run_fastqc(args)
         return args
     elif pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
-        print('FASTQC and adapter trimming specified, \
-               Running FASTQC and CutAdapt on raw data...')
+        print("\n========================================" \
+              "\nFASTQC and adapter trimming specified,\n" \
+              "Running FASTQC and CutAdapt on raw data...\n" \
+              "========================================\n")
         #To Do: run_fastqc_and_trim(args)
         return args
     elif not pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
         print('Adapter trimming only specified')
+        print("\n========================================" \
+              "\n''\n" \
+              "========================================\n")
         #To Do: run_trimming(args)
         return args
     else:
