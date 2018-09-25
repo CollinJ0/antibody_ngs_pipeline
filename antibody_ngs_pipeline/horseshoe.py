@@ -283,7 +283,7 @@ def run_mongo_import(args):
                         delim2=args.delim2)
     except AttributeError:
         print("\n========================================" \
-                "\nMerge was True, Should have been false! \n" \
+                "\nERROR!!: Merge was True, Should have been false! \n" \
                 "========================================\n")
         sys.exit(5)
 
