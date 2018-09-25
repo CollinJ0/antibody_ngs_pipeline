@@ -199,9 +199,9 @@ def run_abstar(parameters, project):
             print('ERROR: No Files Found in Basemount!')
             sys.exit(4)
     if parameters.merge == False:
-    print("\n========================================" \
-          "\nUnzipping Input Files\n" \
-          "========================================\n")
+        print("\n========================================" \
+              "\nUnzipping Input Files\n" \
+              "========================================\n")
         os.system('gunzip {}/input/*'.format(parameters.project_dir))
     run_standalone(parameters)
 
