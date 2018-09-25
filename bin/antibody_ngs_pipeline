@@ -12,7 +12,7 @@ if __name__ == '__main__':
     #Preprocessing the data if specified
     if config.ARGS.fastqc or config.ARGS.adapter_fasta != None:
         #Run Abstar On Basespace Project with preprocessing
-        scripps.run_abstar(config.ABSTAR_ARGS, config.PROJECT, config.ARGS, preprocess=True)
+        scripps.run_abstar(config.ABSTAR_ARGS, config.PROJECT, config.ARGS, preprocessing=True)
     else:
         #Run Abstar On Basespace Project without preprocessing
         scripps.run_abstar(config.ABSTAR_ARGS, config.PROJECT, config.ARGS)
