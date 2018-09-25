@@ -33,8 +33,8 @@ cutadapt
 pymongo  
   
 
-Downloading from BaseSpace requires Basemount: https://basemount.basespace.illumina.com/
-Quality trimming requires sickle: https://github.com/najoshi/sickle
-FastQC report requires FastQC: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/ 
+Downloading from BaseSpace requires Basemount: https://basemount.basespace.illumina.com/  
+Quality trimming requires sickle: https://github.com/najoshi/sickle  
+FastQC report requires FastQC: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/  
 Merging paired sequences requires PANDAseq: https://github.com/neufeld/pandaseq  
-batch_mongoimport (from Abstar) requires MongoDB: http://www.mongodb.org/   
+batch_mongoimport (from Abstar) requires MongoDB: http://www.mongodb.org/  
