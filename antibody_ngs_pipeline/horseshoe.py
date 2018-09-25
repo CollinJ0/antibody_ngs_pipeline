@@ -8,15 +8,13 @@ import shutil
 import time
 from getpass import getpass
 from argparse import ArgumentParser
-try:
-    from abstar.core.abstar import Args
-    from abstar.assigners.registry import ASSIGNERS
-    from abstar.utils import mongoimport
-    from abstar import run_standalone
-    from abutils.utils.pipeline import make_dir
-    from abutils.utils.progbar import progress_bar
-except ImportError:
-    print('you need abstar and abutils')
+
+from abstar.core.abstar import Args
+from abstar.assigners.registry import ASSIGNERS
+from abstar.utils import mongoimport
+from abstar import run_standalone
+from abutils.utils.pipeline import make_dir
+from abutils.utils.progbar import progress_bar
 
 
 
@@ -200,6 +198,8 @@ def run_abstar(parameters, project):
         except ZeroDivisionError:
             print('ERROR: No Files Found in Basemount!')
             sys.exit(4)
+    if parameters.merge == False:
+        print('gunzip {}/*'.format(parameters.input_dir))
     run_standalone(parameters)
 
 ######################################################
