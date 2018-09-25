@@ -56,16 +56,19 @@ def preprocess(args, pipeline_args):
     if pipeline_args.fastqc and pipeline_args.adapter_fasta == None:
         print('FASTQC only specified, Running FASTQC on raw data...')
         #To Do: run_fastqc(args)
+        return args
     elif pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
         print('FASTQC and adapter trimming specified, \
                Running FASTQC and CutAdapt on raw data...')
         #To Do: run_fastqc_and_trim(args)
+        return args
     elif not pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
         print('Adapter trimming only specified')
         #To Do: run_trimming(args)
+        return args
     else:
-        return
-    return
+        return args
+    return args
     
 def check_dir(directory):
     if not os.path.exists(os.path.abspath(directory)):
@@ -179,7 +182,7 @@ def basemount_dir(bsmnt_dir, project):
         sys.exit(3)
     return bsmnt_dir
 
-def run_abstar(parameters, project):
+def run_abstar(parameters, project, pipeline_args, preprocessing=False):
     default_base_setpoint = '/basemount'
     default_base_projects = os.path.join(default_base_setpoint, 'Projects')
     input_dir = os.path.join(parameters.project_dir, 'input')
@@ -198,6 +201,8 @@ def run_abstar(parameters, project):
         except ZeroDivisionError:
             print('ERROR: No Files Found in Basemount!')
             sys.exit(4)
+    if preprocessing == True:
+        parameters = preprocess(parameters, pipeline_args)
     if parameters.merge == False:
         print("\n========================================" \
               "\nUnzipping Input Files\n" \
