@@ -1,0 +1,11 @@
+README.md
+antibody_ngs_pipeline/__init__.py
+antibody_ngs_pipeline/config.py
+antibody_ngs_pipeline/horseshoe.py
+antibody_ngs_pipeline/seaside_reef.py
+antibody_ngs_pipeline.egg-info/PKG-INFO
+antibody_ngs_pipeline.egg-info/SOURCES.txt
+antibody_ngs_pipeline.egg-info/dependency_links.txt
+antibody_ngs_pipeline.egg-info/top_level.txt
+bin/__init__.py
+bin/antibody_ngs_pipeline
