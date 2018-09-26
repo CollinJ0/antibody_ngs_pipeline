@@ -61,7 +61,7 @@ def preprocess(args, pipeline_args):
     adapter_output = os.path.join(args.project_dir, 'adapter_trimmed')
     quality_output = os.path.join(args.project_dir, 'quality_trimmed')
     fastqc_trimmed_output = os.path.join(args.project_dir, 'fastqc_trimmed')
-    if pipeline_args.fastqc and pipeline_args.adapter_fasta == None:
+    if pipeline_args.fastqc and pipeline_args.adapter_fasta == None and not pipeline_args.quality_trim:
         print("\n========================================" \
               "\nFASTQC only specified, Running FASTQC on raw data...")
         fastqc(original_input, output_directory=fastqc_raw_output)
