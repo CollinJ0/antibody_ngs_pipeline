@@ -12,7 +12,7 @@ from argparse import ArgumentParser
 from abstar.core.abstar import Args
 from abstar.assigners.registry import ASSIGNERS
 from abstar.utils import mongoimport
-from abstar import run_standalone
+from abstar import run_standalone, fastqc, adapter_trim, quality_trim
 from abutils.utils.pipeline import make_dir
 from abutils.utils.progbar import progress_bar
 
@@ -24,10 +24,13 @@ from .seaside_reef import ABSTAR_PARAMS, copy_from_basemount, print_splash#, MON
 def parse_arguments(print_help=False):
     parser = ArgumentParser(prog='antibody_ngs_pipeline', description="Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3")
     parser.add_argument('-f', '--fastqc', action='store_true', dest='fastqc', default=False,
-                        help="Use to generate a FASTQC quality report on raw data, if used with adapter trimming \
-                             '-t' a FASTQC quality report will be made for both pre and post adapter trimmed data.")
+                        help="Use to generate a FASTQC quality report on raw data, if used with quality trimming \
+                             '-q' a FASTQC quality report will be made for both pre and post adapter trimmed data.")
     parser.add_argument('-t', '--adapter-trim', dest='adapter_fasta', default=None,
                         help="Adapter trimming using CutAdapt, if this flag is used, must specify \
+                              the location of a fasta file which contains adapter sequences for both ends.")
+    parser.add_argument('-q', '--quality-trim', action='store_true', dest='quality_trim', default=False,
+                        help="Quality trimming using Sickle, if this flag is used, must specify \
                               the location of a fasta file which contains adapter sequences for both ends.")
     if print_help:
         parser.print_help()
@@ -53,25 +56,40 @@ def abstar_params(project):
     return parameters
 
 def preprocess(args, pipeline_args):
+    fastqc_raw_output = os.path.join(args.project_dir, 'fastqc_raw')
+    original_input = os.path.join(args.project_dir, 'input')
+    adapter_output = os.path.join(args.project_dir, 'adapter_trimmed')
+    quality_output = os.path.join(args.project_dir, 'quality_trimmed')
+    fastqc_trimmed_output = os.path.join(args.project_dir, 'fastqc_trimmed')
     if pipeline_args.fastqc and pipeline_args.adapter_fasta == None:
         print("\n========================================" \
-              "\nFASTQC only specified, Running FASTQC on raw data...\n" \
-              "========================================\n")
-        #To Do: run_fastqc(args)
+              "\nFASTQC only specified, Running FASTQC on raw data...")
+        fastqc(original_input, output_directory=fastqc_raw_output)
+        print("\nFastQC report on raw fastqs available in {}\n" \
+              "========================================\n".format(fastqc_raw_output))
         return args
-    elif pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
+    elif pipeline_args.fastqc and pipeline_args.quality_trim:
         print("\n========================================" \
-              "\nFASTQC and adapter trimming specified,\n" \
-              "Running FASTQC and CutAdapt on raw data...\n" \
-              "========================================\n")
-        #To Do: run_fastqc_and_trim(args)
+              "\nFASTQC and quality trimming specified,\n" \
+              "Running FASTQC on raw data...\n")
+        fastqc(original_input, output_directory=fastqc_raw_output)
+        print("\nFastQC report on raw fastqs available in {}\n".format(fastqc_raw_output))
+        print("\nQuality trimming raw fastqs with Sickle...\n")
+        quality_trim(original_input, output_directory=quality_output)
+        print("\nRunning FASTQC on quality trimmed fastqs...\n")
+        fastqc(quality_output, output_directory=fastqc_trimmed_output)
+        print("\nFastQC report on raw fastqs available in {}".format(fastqc_trimmed_output))
+        print("========================================\n")
+        args.input = quality_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
         return args
     elif not pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
-        print('Adapter trimming only specified')
         print("\n========================================" \
-              "\n''\n" \
+              "\nAdapter trimming only specified, Not yet implemented, nothing will happen\n" \
               "========================================\n")
-        #To Do: run_trimming(args)
+        args = run_trimming(args)
         return args
     else:
         return args
