@@ -10,16 +10,15 @@ from antibody_ngs_pipeline import horseshoe as scripps
 
 if __name__ == '__main__':
     #Preprocessing the data if specified
-    if config.ARGS.fastqc or config.ARGS.adapter_fasta != None:
-        scripps.preprocess(config.ABSTAR_ARGS, config.ARGS)
-
-    #Run Abstar On Basespace Project
-    scripps.run_abstar(config.ABSTAR_ARGS, config.PROJECT)
+    if config.ARGS.fastqc or config.ARGS.quality_trim or config.ARGS.adapter_fasta != None:
+        #Run Abstar On Basespace Project with preprocessing
+        scripps.run_abstar(config.ABSTAR_ARGS, config.PROJECT, config.ARGS, preprocessing=True)
+    else:
+        #Run Abstar On Basespace Project without preprocessing
+        scripps.run_abstar(config.ABSTAR_ARGS, config.PROJECT, config.ARGS)
 
     #Import the data to a MongoDB
     scripps.run_mongo_import(config.MONGO_ARGS)
-
-    #To Do: Correct data by UIDs
     
     #To Do: Import the data to S3
     #scripps.run_s3_import(config.S3_ARGS)

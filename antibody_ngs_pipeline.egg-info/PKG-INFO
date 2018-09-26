@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: antibody-ngs-pipeline
-Version: 1.0.0.dev0
+Version: 1.0.1.dev0
 Summary: Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3
 Home-page: https://www.github.com/CollinJ0/antibody_ngs_pipeline
 Author: CollinJ0
@@ -25,9 +25,12 @@ Description: # Antibody NGS Pipeline
         To run antibody_ngs_pipeline with adapter trimming by CutAdapt:  
         `antibody_ngs_pipeline -t <path-to-adapters.fasta>`
         
+        To run antibody_ngs_pipeline with quality trimming by sickle:  
+        `antibody_ngs_pipeline -q`
+        
         To run antibody_ngs_pipeline with adapter trimming by CutAdapt, quality trimming 
         with sickle and get a FASTQC report on both raw data and processed data:  
-        `antibody_ngs_pipeline -f -t <path-to-adapters.fasta>`
+        `antibody_ngs_pipeline -f -q -t <path-to-adapters.fasta>`
         
         
         
@@ -40,9 +43,11 @@ Description: # Antibody NGS Pipeline
         pymongo  
           
         
+        Downloading from BaseSpace requires Basemount: https://basemount.basespace.illumina.com/  
+        Quality trimming requires sickle: https://github.com/najoshi/sickle  
+        FastQC report requires FastQC: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/  
         Merging paired sequences requires PANDAseq: https://github.com/neufeld/pandaseq  
         batch_mongoimport (from Abstar) requires MongoDB: http://www.mongodb.org/  
-        Downloading from BaseSpace requires Basemount: https://basemount.basespace.illumina.com/  
         
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3

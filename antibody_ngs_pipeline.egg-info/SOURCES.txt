@@ -1,4 +1,5 @@
 README.md
+setup.py
 antibody_ngs_pipeline/__init__.py
 antibody_ngs_pipeline/config.py
 antibody_ngs_pipeline/horseshoe.py

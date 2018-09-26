@@ -103,14 +103,6 @@ def print_splash():
     # print('')
     print(splash1)
     print(splash2)
-    splashes = [splash3, splash4, splash5, splash6, splash7, splash8, splash9, splash10, splash11]
-    for splash in splashes:
-        time.sleep(0.25)
-        print('\r\r\r\r\r', end = "")
-        print('\r', end = "")
-        print('\r', end = "")
-        print('\r', end = "")
-        print("\r" + splash, end="")
-        sys.stdout.flush()
+    print(splash11)
     print('')
     print('')

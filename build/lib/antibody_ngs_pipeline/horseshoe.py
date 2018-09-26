@@ -3,20 +3,18 @@
 
 import sys
 import os
-
+import warnings
 import shutil
 import time
 from getpass import getpass
 from argparse import ArgumentParser
-try:
-    from abstar.core.abstar import Args
-    from abstar.assigners.registry import ASSIGNERS
-    from abstar.utils import mongoimport
-    from abstar import run_standalone
-    from abutils.utils.pipeline import make_dir
-    from abutils.utils.progbar import progress_bar
-except ImportError:
-    print('you need abstar and abutils')
+
+from abstar.core.abstar import Args
+from abstar.assigners.registry import ASSIGNERS
+from abstar.utils import mongoimport
+from abstar import run_standalone, fastqc, adapter_trim, quality_trim
+from abutils.utils.pipeline import make_dir
+from abutils.utils.progbar import progress_bar
 
 
 
@@ -26,10 +24,13 @@ from .seaside_reef import ABSTAR_PARAMS, copy_from_basemount, print_splash#, MON
 def parse_arguments(print_help=False):
     parser = ArgumentParser(prog='antibody_ngs_pipeline', description="Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3")
     parser.add_argument('-f', '--fastqc', action='store_true', dest='fastqc', default=False,
-                        help="Use to generate a FASTQC quality report on raw data, if used with adapter trimming \
-                             '-t' a FASTQC quality report will be made for both pre and post adapter trimmed data.")
+                        help="Use to generate a FASTQC quality report on raw data, if used with quality trimming \
+                             '-q' a FASTQC quality report will be made for both pre and post adapter trimmed data.")
     parser.add_argument('-t', '--adapter-trim', dest='adapter_fasta', default=None,
                         help="Adapter trimming using CutAdapt, if this flag is used, must specify \
+                              the location of a fasta file which contains adapter sequences for both ends.")
+    parser.add_argument('-q', '--quality-trim', action='store_true', dest='quality_trim', default=False,
+                        help="Quality trimming using Sickle, if this flag is used, must specify \
                               the location of a fasta file which contains adapter sequences for both ends.")
     if print_help:
         parser.print_help()
@@ -55,19 +56,110 @@ def abstar_params(project):
     return parameters
 
 def preprocess(args, pipeline_args):
-    if pipeline_args.fastqc and pipeline_args.adapter_fasta == None:
-        print('FASTQC only specified, Running FASTQC on raw data...')
-        #To Do: run_fastqc(args)
-    elif pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
-        print('FASTQC and adapter trimming specified, \
-               Running FASTQC and CutAdapt on raw data...')
-        #To Do: run_fastqc_and_trim(args)
-    elif not pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
-        print('Adapter trimming only specified')
-        #To Do: run_trimming(args)
+    fastqc_raw_output = os.path.join(args.project_dir, 'fastqc_raw')
+    original_input = os.path.join(args.project_dir, 'input')
+    adapter_output = os.path.join(args.project_dir, 'adapter_trimmed')
+    quality_output = os.path.join(args.project_dir, 'quality_trimmed')
+    fastqc_trimmed_output = os.path.join(args.project_dir, 'fastqc_trimmed')
+    if pipeline_args.fastqc and pipeline_args.adapter_fasta == None and not pipeline_args.quality_trim:
+        print("\n========================================" \
+              "\nFASTQC only specified, Running FASTQC on raw data...")
+        fastqc(original_input, output_directory=fastqc_raw_output)
+        print("\nFastQC report on raw fastqs available in {}\n" \
+              "========================================\n".format(fastqc_raw_output))
+        return args
+    elif pipeline_args.fastqc and pipeline_args.quality_trim and pipeline_args.adapter_fasta == None:
+        print("\n========================================" \
+              "\nFASTQC and quality trimming specified,\n" \
+              "Running FASTQC on raw data...\n")
+        fastqc(original_input, output_directory=fastqc_raw_output)
+        print("\nFastQC report on raw fastqs available in {}\n".format(fastqc_raw_output))
+        print("\nQuality trimming raw fastqs with Sickle...\n")
+        quality_trim(original_input, output_directory=quality_output)
+        print("\nRunning FASTQC on quality trimmed fastqs...\n")
+        fastqc(quality_output, output_directory=fastqc_trimmed_output)
+        print("\nFastQC report on quality trimmed fastqs available in {}".format(fastqc_trimmed_output))
+        print("========================================\n")
+        args.input = quality_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
+        return args
+    elif not pipeline_args.fastqc and not pipeline_args.quality_trim and pipeline_args.adapter_fasta != None:
+        print("\n========================================" \
+              "\nAdapter trimming only specified." \
+              "\nTrimming adapters with CutAdapt...")
+        #Try adapter trim, if a non valid file of adapters has been passed through, sys.exit()
+        adapter_trim(original_input, output_directory=adapter_output, adapter_both=pipeline_args.adapter_fasta)
+        print("========================================\n")
+        args.input = adapter_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None       
+        return args
+    elif not pipeline_args.fastqc and pipeline_args.quality_trim and pipeline_args.adapter_fasta == None:
+        print("\n========================================" \
+              "\nQuality trimming only specified." \
+              "\nQuality trimming raw fastqs with Sickle...")
+        quality_trim(original_input, output_directory=quality_output)
+        args.input = quality_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
+        return args
+    elif pipeline_args.fastqc and not pipeline_args.quality_trim and pipeline_args.adapter_fasta != None:       
+        print("\n========================================" \
+              "\nFASTQC and adapter trimming specified,\n" \
+              "Running FASTQC on raw data...\n")
+        fastqc(original_input, output_directory=fastqc_raw_output)
+        print("\nFastQC report on raw fastqs available in {}\n".format(fastqc_raw_output))
+        print("\nAdapter trimming raw fastqs with CutAdapt...\n")
+        adapter_trim(original_input, output_directory=adapter_output, adapter_both=pipeline_args.adapter_fasta)
+        print("\nRunning FASTQC on adapter trimmed fastqs...\n")
+        fastqc(adapter_output, output_directory=fastqc_trimmed_output)
+        print("\nFastQC report on adapter trimmed fastqs available in {}".format(fastqc_trimmed_output))
+        print("========================================\n")
+        args.input = adapter_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
+        return args
+    elif pipeline_args.fastqc and pipeline_args.quality_trim and pipeline_args.adapter_fasta != None:       
+        print("\n========================================" \
+              "\nFASTQC and adapter trimming and quality trimming specified,\n" \
+              "Running FASTQC on raw data...\n")
+        fastqc(original_input, output_directory=fastqc_raw_output)
+        print("\nFastQC report on raw fastqs available in {}\n".format(fastqc_raw_output))
+        print("\nAdapter trimming raw fastqs with CutAdapt...\n")
+        adapter_trim(original_input, output_directory=adapter_output, adapter_both=pipeline_args.adapter_fasta)
+        print("Quality trimming raw fastqs with Sickle...")
+        quality_trim(adapter_output, output_directory=quality_output)
+        print("\nRunning FASTQC on adapter and quality trimmed fastqs...\n")
+        fastqc(quality_output, output_directory=fastqc_trimmed_output)
+        print("\nFastQC report on adapter and quality trimmed fastqs available in {}".format(fastqc_trimmed_output))
+        print("========================================\n")
+        args.input = quality_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
+        return args
+    elif not pipeline_args.fastqc and pipeline_args.quality_trim and pipeline_args.adapter_fasta != None:       
+        print("\n========================================" \
+              "\nAdapter trimming and quality trimming specified")
+        print("\nAdapter trimming raw fastqs with CutAdapt...")
+        adapter_trim(original_input, output_directory=adapter_output, adapter_both=pipeline_args.adapter_fasta)
+        print("Quality trimming raw fastqs with Sickle...")
+        quality_trim(adapter_output, output_directory=quality_output)
+        print("Done")
+        print("========================================\n")
+        args.input = quality_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
+        return args
     else:
-        return
-    return
+        return args
+    return args
     
 def check_dir(directory):
     if not os.path.exists(os.path.abspath(directory)):
@@ -181,7 +273,7 @@ def basemount_dir(bsmnt_dir, project):
         sys.exit(3)
     return bsmnt_dir
 
-def run_abstar(parameters, project):
+def run_abstar(parameters, project, pipeline_args, preprocessing=False):
     default_base_setpoint = '/basemount'
     default_base_projects = os.path.join(default_base_setpoint, 'Projects')
     input_dir = os.path.join(parameters.project_dir, 'input')
@@ -200,6 +292,19 @@ def run_abstar(parameters, project):
         except ZeroDivisionError:
             print('ERROR: No Files Found in Basemount!')
             sys.exit(4)
+    if preprocessing:
+        parameters = preprocess(parameters, pipeline_args)
+    if not parameters.merge and not preprocessing:
+        print("\n========================================" \
+              "\nUnzipping Input Files\n" \
+              "========================================\n")
+        os.system('gunzip {}/input/*'.format(parameters.project_dir))
+    if not parameters.merge and preprocessing:
+        print("\n========================================" \
+              "\nUnzipping Input Files\n" \
+              "========================================\n")
+        os.system('gunzip {}/*'.format(parameters.input))
+    warnings.filterwarnings("ignore")
     run_standalone(parameters)
 
 ######################################################
@@ -211,10 +316,13 @@ def mongo_params(project, abstar_args):
     print("\n========================================" \
           "\nMongo Import Run Arguments\n" \
           "========================================\n")
-    abstar_output = os.path.join(abstar_args.project_dir, 'output')
-    mongo_args = mongoimport.Args(db=abstar_args.project_dir.rsplit('/')[1], input=abstar_output, delim1='.')
+    
+    abstar_output = os.path.join(abstar_args.project_dir, 'output') if abstar_args.project_dir != None else abstar_args.output
+    logs = os.path.join(abstar_args.project_dir, 'log/mongo.log') if abstar_args.project_dir != None else os.path.join(os.path.dirname(args.input), 'log/mongo.log')
+    mongo_args = mongoimport.Args(db=project, input=abstar_output, delim1='.', log=logs)
     if print_mongo_args(mongo_args):
         mongo_args = change_mongo_args(mongo_args)
+    return mongo_args
 
 
 def print_mongo_args(parameters):
@@ -269,10 +377,10 @@ def run_mongo_import(args):
                     user=args.user,
                     password=args.password,
                     input=args.input,
+                    log=args.log,
                     db=args.db,
                     delim1=args.delim1,
                     delim2=args.delim2)
-
 
 def print_the_splash():
     print_splash()
