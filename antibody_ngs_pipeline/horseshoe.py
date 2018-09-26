@@ -292,18 +292,18 @@ def run_abstar(parameters, project, pipeline_args, preprocessing=False):
         except ZeroDivisionError:
             print('ERROR: No Files Found in Basemount!')
             sys.exit(4)
-    if preprocessing == True:
+    if preprocessing:
         parameters = preprocess(parameters, pipeline_args)
-    if parameters.merge == False and preprocessing == False:
+    if not parameters.merge and not preprocessing:
         print("\n========================================" \
               "\nUnzipping Input Files\n" \
               "========================================\n")
         os.system('gunzip {}/input/*'.format(parameters.project_dir))
-    if parameters.merge == False and preprocessing == True:
+    if not parameters.merge and preprocessing:
         print("\n========================================" \
               "\nUnzipping Input Files\n" \
               "========================================\n")
-        os.system('gunzip {}/input/*'.format(parameters.input))
+        os.system('gunzip {}/*'.format(parameters.input))
     run_standalone(parameters)
 
 ######################################################
