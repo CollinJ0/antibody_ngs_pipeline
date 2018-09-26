@@ -369,20 +369,14 @@ def change_mongo_args(parameters):
         
 
 def run_mongo_import(args):
-    try:
-        mongoimport.run(ip=args.ip,
-                        port=args.port,
-                        user=args.user,
-                        password=args.password,
-                        input=args.input,
-                        db=args.db,
-                        delim1=args.delim1,
-                        delim2=args.delim2)
-    except AttributeError:
-        print("\n========================================" \
-                "\nERROR!!: Merge was True, Should have been false! \n" \
-                "========================================\n")
-        sys.exit(5)
+    mongoimport.run(ip=args.ip,
+                    port=args.port,
+                    user=args.user,
+                    password=args.password,
+                    input=args.input,
+                    db=args.db,
+                    delim1=args.delim1,
+                    delim2=args.delim2)
 
 def print_the_splash():
     print_splash()
