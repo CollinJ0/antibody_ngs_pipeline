@@ -18,6 +18,9 @@ To run antibody_ngs_pipeline with FASTQC report on raw data:
 To run antibody_ngs_pipeline with adapter trimming by CutAdapt:  
 `antibody_ngs_pipeline -t <path-to-adapters.fasta>`
 
+To run antibody_ngs_pipeline with quality trimming by sickle:  
+`antibody_ngs_pipeline -q`
+
 To run antibody_ngs_pipeline with adapter trimming by CutAdapt, quality trimming 
 with sickle and get a FASTQC report on both raw data and processed data:  
 `antibody_ngs_pipeline -f -q -t <path-to-adapters.fasta>`
