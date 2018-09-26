@@ -320,6 +320,7 @@ def mongo_params(project, abstar_args):
     mongo_args = mongoimport.Args(db=project, input=abstar_output, delim1='.')
     if print_mongo_args(mongo_args):
         mongo_args = change_mongo_args(mongo_args)
+    return mongo_args
 
 
 def print_mongo_args(parameters):
