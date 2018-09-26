@@ -68,7 +68,7 @@ def preprocess(args, pipeline_args):
         print("\nFastQC report on raw fastqs available in {}\n" \
               "========================================\n".format(fastqc_raw_output))
         return args
-    elif pipeline_args.fastqc and pipeline_args.quality_trim:
+    elif pipeline_args.fastqc and pipeline_args.quality_trim and pipeline_args.adapter_fasta == None:
         print("\n========================================" \
               "\nFASTQC and quality trimming specified,\n" \
               "Running FASTQC on raw data...\n")
@@ -78,18 +78,84 @@ def preprocess(args, pipeline_args):
         quality_trim(original_input, output_directory=quality_output)
         print("\nRunning FASTQC on quality trimmed fastqs...\n")
         fastqc(quality_output, output_directory=fastqc_trimmed_output)
-        print("\nFastQC report on raw fastqs available in {}".format(fastqc_trimmed_output))
+        print("\nFastQC report on quality trimmed fastqs available in {}".format(fastqc_trimmed_output))
         print("========================================\n")
         args.input = quality_output
         args.output = os.path.join(args.project_dir, 'output')
         args.temp = os.path.join(args.project_dir, 'temp')
         args.project_dir = None
         return args
-    elif not pipeline_args.fastqc and pipeline_args.adapter_fasta != None:
+    elif not pipeline_args.fastqc and not pipeline_args.quality_trim and pipeline_args.adapter_fasta != None:
         print("\n========================================" \
-              "\nAdapter trimming only specified, Not yet implemented, nothing will happen\n" \
-              "========================================\n")
-        args = run_trimming(args)
+              "\nAdapter trimming only specified." \
+              "\nTrimming adapters with CutAdapt...")
+        #Try adapter trim, if a non valid file of adapters has been passed through, sys.exit()
+        adapter_trim(original_input, output_directory=adapter_output, adapter_both=pipeline_args.adapter_fasta)
+        print("========================================\n")
+        args.input = adapter_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None       
+        return args
+    elif not pipeline_args.fastqc and pipeline_args.quality_trim and pipeline_args.adapter_fasta == None:
+        print("\n========================================" \
+              "\nQuality trimming only specified." \
+              "\nQuality trimming raw fastqs with Sickle...")
+        quality_trim(original_input, output_directory=quality_output)
+        args.input = quality_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
+        return args
+    elif pipeline_args.fastqc and not pipeline_args.quality_trim and pipeline_args.adapter_fasta != None:       
+        print("\n========================================" \
+              "\nFASTQC and adapter trimming specified,\n" \
+              "Running FASTQC on raw data...\n")
+        fastqc(original_input, output_directory=fastqc_raw_output)
+        print("\nFastQC report on raw fastqs available in {}\n".format(fastqc_raw_output))
+        print("\nAdapter trimming raw fastqs with CutAdapt...\n")
+        adapter_trim(original_input, output_directory=adapter_output, adapter_both=pipeline_args.adapter_fasta)
+        print("\nRunning FASTQC on adapter trimmed fastqs...\n")
+        fastqc(adapter_output, output_directory=fastqc_trimmed_output)
+        print("\nFastQC report on adapter trimmed fastqs available in {}".format(fastqc_trimmed_output))
+        print("========================================\n")
+        args.input = adapter_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
+        return args
+    elif pipeline_args.fastqc and pipeline_args.quality_trim and pipeline_args.adapter_fasta != None:       
+        print("\n========================================" \
+              "\nFASTQC and adapter trimming and quality trimming specified,\n" \
+              "Running FASTQC on raw data...\n")
+        fastqc(original_input, output_directory=fastqc_raw_output)
+        print("\nFastQC report on raw fastqs available in {}\n".format(fastqc_raw_output))
+        print("\nAdapter trimming raw fastqs with CutAdapt...\n")
+        adapter_trim(original_input, output_directory=adapter_output, adapter_both=pipeline_args.adapter_fasta)
+        print("Quality trimming raw fastqs with Sickle...")
+        quality_trim(adapter_output, output_directory=quality_output)
+        print("\nRunning FASTQC on adapter and quality trimmed fastqs...\n")
+        fastqc(quality_output, output_directory=fastqc_trimmed_output)
+        print("\nFastQC report on adapter and quality trimmed fastqs available in {}".format(fastqc_trimmed_output))
+        print("========================================\n")
+        args.input = quality_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
+        return args
+    elif not pipeline_args.fastqc and pipeline_args.quality_trim and pipeline_args.adapter_fasta != None:       
+        print("\n========================================" \
+              "\nAdapter trimming and quality trimming specified")
+        print("\nAdapter trimming raw fastqs with CutAdapt...")
+        adapter_trim(original_input, output_directory=adapter_output, adapter_both=pipeline_args.adapter_fasta)
+        print("Quality trimming raw fastqs with Sickle...")
+        quality_trim(adapter_output, output_directory=quality_output)
+        print("Done")
+        print("========================================\n")
+        args.input = quality_output
+        args.output = os.path.join(args.project_dir, 'output')
+        args.temp = os.path.join(args.project_dir, 'temp')
+        args.project_dir = None
         return args
     else:
         return args
@@ -228,11 +294,16 @@ def run_abstar(parameters, project, pipeline_args, preprocessing=False):
             sys.exit(4)
     if preprocessing == True:
         parameters = preprocess(parameters, pipeline_args)
-    if parameters.merge == False:
+    if parameters.merge == False and preprocessing == False:
         print("\n========================================" \
               "\nUnzipping Input Files\n" \
               "========================================\n")
         os.system('gunzip {}/input/*'.format(parameters.project_dir))
+    if parameters.merge == False and preprocessing == True:
+        print("\n========================================" \
+              "\nUnzipping Input Files\n" \
+              "========================================\n")
+        os.system('gunzip {}/input/*'.format(parameters.input))
     run_standalone(parameters)
 
 ######################################################
