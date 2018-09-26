@@ -317,7 +317,8 @@ def mongo_params(project, abstar_args):
           "========================================\n")
     
     abstar_output = os.path.join(abstar_args.project_dir, 'output') if abstar_args.project_dir != None else abstar_args.output
-    mongo_args = mongoimport.Args(db=project, input=abstar_output, delim1='.')
+    logs = os.path.join(abstar_args.project_dir, 'log/mongo.log') if abstar_args.project_dir != None else os.path.join(os.path.dirname(args.input), 'log/mongo.log')
+    mongo_args = mongoimport.Args(db=project, input=abstar_output, delim1='.', log=logs)
     if print_mongo_args(mongo_args):
         mongo_args = change_mongo_args(mongo_args)
     return mongo_args
@@ -375,6 +376,7 @@ def run_mongo_import(args):
                     user=args.user,
                     password=args.password,
                     input=args.input,
+                    log=args.log,
                     db=args.db,
                     delim1=args.delim1,
                     delim2=args.delim2)
