@@ -3,7 +3,7 @@
 
 import sys
 import os
-
+import warnings
 import shutil
 import time
 from getpass import getpass
@@ -304,6 +304,7 @@ def run_abstar(parameters, project, pipeline_args, preprocessing=False):
               "\nUnzipping Input Files\n" \
               "========================================\n")
         os.system('gunzip {}/*'.format(parameters.input))
+    warnings.filterwarnings("ignore")
     run_standalone(parameters)
 
 ######################################################
