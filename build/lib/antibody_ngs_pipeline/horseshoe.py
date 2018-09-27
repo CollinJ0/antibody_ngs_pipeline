@@ -267,7 +267,8 @@ def basemount_dir(bsmnt_dir, project):
         sys.exit(2)
     elif not os.path.exists('/basemount/Projects') and not shutil.which('basemount') == None:
         bd = input('Specify Basemount Set Point Directory: ')
-        bsmnt_dir = basemount_dir(bd, project)
+        bd_pro = os.path.join(bd, 'Projects')
+        bsmnt_dir = basemount_dir(bd_pro, project)
     else:
         print("ERROR!")
         sys.exit(3)

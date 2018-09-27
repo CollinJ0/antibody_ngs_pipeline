@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='antibody_ngs_pipeline',
-    version='1.0.1dev',
+    version='1.0.2dev',
     #packages=['antibody_ngs_pipeline',],
     description='Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3',
     author="CollinJ0",
