@@ -26,7 +26,7 @@ ABSTAR_PARAMS       = {'assigner': ['blastn'],
                        'merge' : {'TRUE': True, 'FALSE': False}
                       }
 
-#STOLEN from briney
+#Copying From Basemount
 def copy_from_basemount(basemount_directory, destination_directory):
     make_dir(os.path.abspath(destination_directory))
     fastqs = []

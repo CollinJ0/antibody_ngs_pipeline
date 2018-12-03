@@ -22,16 +22,15 @@ from .seaside_reef import ABSTAR_PARAMS, copy_from_basemount, print_splash#, MON
 
 
 def parse_arguments(print_help=False):
-    parser = ArgumentParser(prog='antibody_ngs_pipeline', description="Bulk antibody sequence preprocessing, annotation with abstar, upload to MongoDB and S3")
+    parser = ArgumentParser(prog='antibody_ngs_pipeline', description="Bulk antibody sequence preprocessing, annotation with abstar, import to MongoDB")
     parser.add_argument('-f', '--fastqc', action='store_true', dest='fastqc', default=False,
-                        help="Use to generate a FASTQC quality report on raw data, if used with quality trimming \
-                             '-q' a FASTQC quality report will be made for both pre and post adapter trimmed data.")
+                        help="Use to generate a FASTQC quality report on raw data, if used with quality trimming and/or adapter trimming \
+                             '-q' a FASTQC quality report will be made for both pre and post quality trimmed data.")
     parser.add_argument('-t', '--adapter-trim', dest='adapter_fasta', default=None,
                         help="Adapter trimming using CutAdapt, if this flag is used, must specify \
                               the location of a fasta file which contains adapter sequences for both ends.")
     parser.add_argument('-q', '--quality-trim', action='store_true', dest='quality_trim', default=False,
-                        help="Quality trimming using Sickle, if this flag is used, must specify \
-                              the location of a fasta file which contains adapter sequences for both ends.")
+                        help="Quality trimming using Sickle")
     if print_help:
         parser.print_help()
     else:
